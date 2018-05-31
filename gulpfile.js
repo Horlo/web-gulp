@@ -14,6 +14,7 @@ var removeEmptyLines = require('gulp-remove-empty-lines');
 var htmlmin = require('gulp-htmlmin');
 var webserver = require('gulp-webserver');
 var concat = require('gulp-concat');
+var sourcemaps = require('gulp-sourcemaps');
 
 
 var buildBasePath = 'dist/';
@@ -39,6 +40,7 @@ gulp.task('clean', function (cb) {
 //less 压缩打包
 gulp.task('minStyle', function () {
     gulp.src("src/less/style.less")
+        .pipe(sourcemaps.init())
         .pipe(rename({
             suffix: '.min'
         }))
@@ -51,6 +53,7 @@ gulp.task('minStyle', function () {
         ]))
         .pipe(importCss())
         .pipe(cssmin())
+        .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(buildBasePath + 'style'))
 })
 // less 不压缩打包
@@ -116,8 +119,10 @@ gulp.task('html', function () {
 //js 压缩
 gulp.task('minScript', function () {
     gulp.src('src/js/*.js')
+        .pipe(sourcemaps.init())
         .pipe(uglify())
         .pipe(concat('app.min.js'))
+        .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('dist/js/'))
 })
 
