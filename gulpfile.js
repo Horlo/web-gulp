@@ -33,7 +33,7 @@ var browsers = [
 
 //清空dist
 gulp.task('clean', function (cb) {
-    del(['dist/'], cb)
+    del(['dist'], cb)
 });
 
 //less 压缩打包
@@ -124,8 +124,7 @@ gulp.task('minScript', function () {
 //js 不压缩打包
 gulp.task('script', function () {
     gulp.src('src/js/*.js')
-        .pipe(uglify())
-        .pipe(concat('app.min.js'))
+        .pipe(concat('app.js'))
         .pipe(gulp.dest('dist/js/'))
 })
 
@@ -145,7 +144,6 @@ gulp.task('watch', function () {
 });
 
 
-
 //服务器
 gulp.task('webserver', function () {
     gulp.src('dist')
@@ -157,9 +155,11 @@ gulp.task('webserver', function () {
         }));
 });
 
-//dev
-gulp.task('default', ['webserver', 'devWatch']);
+
+gulp.task('default', ['webserver', 'watch']);
+//empty dist
+gulp.task('clear', ['clean']);
 //build
-gulp.task('build', ['clean', 'minStyle', 'html', 'minImage', 'minScript', 'copy']);
+gulp.task('build', ['minStyle', 'html', 'minImage', 'minScript', 'copy']);
 //build All
-gulp.task('buildAll', ['clean', 'minStyle', 'style', 'html', 'minImage', 'minScript','script','copy']);
+gulp.task('buildAll', ['minStyle', 'style', 'html', 'minImage', 'minScript','script','copy']);
