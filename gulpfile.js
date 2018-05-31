@@ -136,7 +136,7 @@ gulp.task('copy', function () {
 });
 
 //监听
-gulp.task('devWatch', function () {
+gulp.task('watch', function () {
     gulp.watch("src/less/*.less", ['style']);
     gulp.watch("src/pages/*.html", ['html']);
     gulp.watch('src/images/*.{png,jpg,gif,ico}', ['image']);
@@ -144,13 +144,6 @@ gulp.task('devWatch', function () {
     gulp.watch('src/plugins/*', ['copy']);
 });
 
-gulp.task('watch', function () {
-    gulp.watch("src/less/*.less", ['minStyle']);
-    gulp.watch("src/pages/*.html", ['minHtml']);
-    gulp.watch('src/images/*.{png,jpg,gif,ico}', ['minImage']);
-    gulp.watch('src/js/*.js', ['minScript']);
-    gulp.watch('src/plugins/*', ['copy']);
-});
 
 
 //服务器
