@@ -37,7 +37,7 @@ gulp.task('clean', function (cb) {
 });
 
 //less 压缩打包
-gulp.task('style', function () {
+gulp.task('minStyle', function () {
     gulp.src("src/less/style.less")
         .pipe(rename({
             suffix: '.min'
@@ -53,9 +53,22 @@ gulp.task('style', function () {
         .pipe(cssmin())
         .pipe(gulp.dest(buildBasePath + 'style'))
 })
+// less 不压缩打包
+gulp.task('style', function () {
+    gulp.src("src/less/style.less")
+        .pipe(less())
+        .pipe(postcss([
+            autoprefixer({
+                browsers: browsers,
+                cascade: false
+            })
+        ]))
+        .pipe(importCss())
+        .pipe(gulp.dest(buildBasePath + 'style'))
+})
 
 //img 压缩
-gulp.task('image', function () {
+gulp.task('minImage', function () {
     gulp.src('src/images/*.{png,jpg,gif,ico}')
         .pipe(imagemin({
             optimizationLevel: 5, //类型：Number  默认：3  取值范围：0-7（优化等级）
@@ -66,8 +79,15 @@ gulp.task('image', function () {
         .pipe(gulp.dest('dist/images'))
 });
 
+//img正常拷贝
+gulp.task('image', function () {
+    gulp.src('src/images/*.{png,jpg,gif,ico}')
+        .pipe(gulp.dest('dist/images'))
+});
+
+
 //html 压缩
-gulp.task('html', function () {
+gulp.task('minHtml', function () {
     var options = {
         removeComments: true, //清除HTML注释
         collapseWhitespace: false, //压缩HTML
@@ -87,7 +107,21 @@ gulp.task('html', function () {
         .pipe(gulp.dest(buildBasePath + 'pages'))
 });
 
+//html 正常拷贝
+gulp.task('html', function () {
+    gulp.src('src/pages/*.html')
+        .pipe(gulp.dest(buildBasePath + 'pages'))
+});
+
 //js 压缩
+gulp.task('minScript', function () {
+    gulp.src('src/js/*.js')
+        .pipe(uglify())
+        .pipe(concat('app.min.js'))
+        .pipe(gulp.dest('dist/js/'))
+})
+
+//js 不压缩打包
 gulp.task('script', function () {
     gulp.src('src/js/*.js')
         .pipe(uglify())
@@ -102,11 +136,19 @@ gulp.task('copy', function () {
 });
 
 //监听
-gulp.task('watch', function () {
+gulp.task('devWatch', function () {
     gulp.watch("src/less/*.less", ['style']);
     gulp.watch("src/pages/*.html", ['html']);
     gulp.watch('src/images/*.{png,jpg,gif,ico}', ['image']);
     gulp.watch('src/js/*.js', ['script']);
+    gulp.watch('src/plugins/*', ['copy']);
+});
+
+gulp.task('watch', function () {
+    gulp.watch("src/less/*.less", ['minStyle']);
+    gulp.watch("src/pages/*.html", ['minHtml']);
+    gulp.watch('src/images/*.{png,jpg,gif,ico}', ['minImage']);
+    gulp.watch('src/js/*.js', ['minScript']);
     gulp.watch('src/plugins/*', ['copy']);
 });
 
@@ -122,5 +164,9 @@ gulp.task('webserver', function () {
         }));
 });
 
-//默认任务
-gulp.task('default', ['webserver', 'watch']);
+//dev
+gulp.task('default', ['webserver', 'devWatch']);
+//build
+gulp.task('build', ['clean', 'minStyle', 'html', 'minImage', 'minScript', 'copy']);
+//build All
+gulp.task('buildAll', ['clean', 'minStyle', 'style', 'html', 'minImage', 'minScript','script','copy']);
